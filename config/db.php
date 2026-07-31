@@ -11,10 +11,10 @@ $isRailway = isset($_ENV['RAILWAY_ENVIRONMENT']) || isset($_SERVER['RAILWAY_ENVI
 
 if ($isRailway) {
     // Railway: gunakan environment variables yang disediakan otomatis
-    define('DB_HOST',    $_ENV['MYSQLHOST']    ?? $_ENV['DB_HOST']    ?? 'localhost');
+    define('DB_HOST',    $_ENV['MYSQLHOST']    ?? $_ENV['DB_HOST']    ?? 'mysql.railway.internal');
     define('DB_USER',    $_ENV['MYSQLUSER']    ?? $_ENV['DB_USER']    ?? 'root');
-    define('DB_PASS',    $_ENV['MYSQLPASSWORD']?? $_ENV['DB_PASS']    ?? '');
-    define('DB_NAME',    $_ENV['MYSQLDATABASE']?? $_ENV['DB_NAME']    ?? 'inventaris_sekolah');
+    define('DB_PASS',    $_ENV['MYSQLPASSWORD']?? $_ENV['DB_PASS']    ?? 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
+    define('DB_NAME',    $_ENV['MYSQLDATABASE']?? $_ENV['DB_NAME']    ?? 'railway');
     define('DB_PORT',    $_ENV['MYSQLPORT']    ?? $_ENV['DB_PORT']    ?? '3306');
     define('APP_URL',    $_ENV['APP_URL']      ?? 'https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
 } else {
