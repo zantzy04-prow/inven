@@ -1,21 +1,31 @@
 <?php
 // ============================================================
-//  config/db.php — HARDCODE & DISPLAY ERROR ON
+//   config/db.php — CONFIG & DATABASE CONNECTION
 // ============================================================
 
-// PAKSA PHP TAMPILIN ERROR 500-NYA
+// TAMPILKAN ERROR UNTUK DEBUGGING
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-define('DB_HOST',    'mysql.railway.internal');
-define('DB_USER',    'root');
-define('DB_PASS',    'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
-define('DB_NAME',    'railway');
-define('DB_PORT',    '3306');
+// TIMEZONE & APP CONFIG
+date_default_timezone_set('Asia/Jakarta');
 
+if (!defined('APP_URL')) {
+    define('APP_URL', getenv('APP_URL') ?: '');
+}
+
+if (!defined('APP_NAME')) {
+    define('APP_NAME', 'Inventaris Lab');
+}
+
+// DATABASE CREDENTIALS (Prioritas Environment Variable Railway)
+define('DB_HOST',    getenv('MYSQLHOST')     ?: 'mysql.railway.internal');
+define('DB_USER',    getenv('MYSQLUSER')     ?: 'root');
+define('DB_PASS',    getenv('MYSQLPASSWORD') ?: 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
+define('DB_NAME',    getenv('MYSQLDATABASE') ?: 'railway');
+define('DB_PORT',    getenv('MYSQLPORT')     ?: '3306');
 define('DB_CHARSET', 'utf8mb4');
-define('APP_NAME',   'Inventaris Lab');
 
 // ── Connect ─────────────────────────────────────────────────
 $pdo = null;
@@ -30,7 +40,6 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    // Kalau koneksi DB gagal, lempar pesan teks jelas
     die("KONEKSI DB GAGAL: " . $e->getMessage());
 }
 
