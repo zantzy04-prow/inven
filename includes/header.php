@@ -1,4 +1,8 @@
 <?php
+// Jamin APP_URL dan APP_NAME selalu terdefinisi tanpa merusak logika session/page
+if (!defined('APP_URL')) define('APP_URL', getenv('APP_URL') ?: '');
+if (!defined('APP_NAME')) define('APP_NAME', 'Inventaris Lab');
+
 if (session_status() === PHP_SESSION_NONE) session_start();
 $pageTitle = $pageTitle ?? APP_NAME;
 $activeNav = $activeNav ?? 'home';
