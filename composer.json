@@ -1,6 +1,5 @@
 {
     "name": "app/inventaris",
-    "description": "Inventaris Lab Sekolah",
     "require": {
         "php": ">=8.1",
         "ext-pdo": "*",
