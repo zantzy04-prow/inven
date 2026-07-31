@@ -17,12 +17,11 @@ if ($host === 'localhost' || $host === '127.0.0.1') {
     $host = getEnvVar('MYSQLPRIVATEHOST', 'mysql.railway.internal');
 }
 
-define('DB_HOST',    $host);
-define('DB_USER',    getEnvVar('MYSQLUSER',     getEnvVar('DB_USER', 'root')));
-define('DB_PASS',    getEnvVar('MYSQLPASSWORD', getEnvVar('DB_PASS', 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS')));
-define('DB_NAME',    getEnvVar('MYSQLDATABASE', getEnvVar('DB_NAME', 'railway')));
-define('DB_PORT',    getEnvVar('MYSQLPORT',     getEnvVar('DB_PORT', '3306')));
-define('APP_URL',    getEnvVar('APP_URL', 'http://localhost/inventaris'));
+define('DB_HOST',    'mysql.railway.internal'); 
+define('DB_USER',    'root');
+define('DB_PASS',    'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
+define('DB_NAME',    'railway');
+define('DB_PORT',    '3306');
 
 define('DB_CHARSET', 'utf8mb4');
 define('APP_NAME',   'Inventaris Lab');
