@@ -1,23 +1,14 @@
 <?php
 // ============================================================
-//  config/db.php — Database Connection (Fix Forced TCP)
-//  Inventaris Sekolah | PHP Native + MySQL
+//  config/db.php — HARDCODE & DISPLAY ERROR ON
 // ============================================================
 
-function getEnvVar(string $key, string $default = ''): string {
-    $val = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
-    return ($val !== false && $val !== null && $val !== '') ? (string)$val : $default;
-}
+// PAKSA PHP TAMPILIN ERROR 500-NYA
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-// 1. Ambil Host
-$host = getEnvVar('MYSQLHOST', getEnvVar('DB_HOST', 'mysql.railway.internal'));
-
-// Jika masih terbaca localhost/127.0.0.1, paksa ganti ke internal hostname atau loopback IP
-if ($host === 'localhost' || $host === '127.0.0.1') {
-    $host = getEnvVar('MYSQLPRIVATEHOST', 'mysql.railway.internal');
-}
-
-define('DB_HOST',    'mysql.railway.internal'); 
+define('DB_HOST',    'mysql.railway.internal');
 define('DB_USER',    'root');
 define('DB_PASS',    'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
 define('DB_NAME',    'railway');
@@ -30,11 +21,7 @@ define('APP_NAME',   'Inventaris Lab');
 $pdo = null;
 
 try {
-    // Kunci utama: gunakan Hostname/IP dan pastikan TCP connection
-    $dsn = sprintf(
-        'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-        DB_HOST, DB_PORT, DB_NAME, DB_CHARSET
-    );
+    $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
 
     $pdo = new PDO($dsn, DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -43,20 +30,8 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    http_response_code(500);
-    
-    // Tampilkan nilai DB_HOST & DB_PORT aktual untuk mempermudah analisa
-    die(json_encode([
-        'error'   => true,
-        'message' => 'Koneksi database gagal. Pastikan database aktif.',
-        'debug'   => [
-            'host_terbaca' => DB_HOST,
-            'port_terbaca' => DB_PORT,
-            'user_terbaca' => DB_USER,
-            'db_terbaca'   => DB_NAME,
-        ],
-        'detail'  => $e->getMessage()
-    ]));
+    // Kalau koneksi DB gagal, lempar pesan teks jelas
+    die("KONEKSI DB GAGAL: " . $e->getMessage());
 }
 
 // ── Helper: format rupiah ────────────────────────────────────
