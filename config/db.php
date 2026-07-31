@@ -2,21 +2,27 @@
 // ============================================================
 //  config/db.php — Database Connection
 //  Inventaris Sekolah | PHP Native + MySQL
-//  Railway: Baca dari environment variables otomatis
 // ============================================================
 
-// Helper untuk mengambil environment variable dari mana saja
 function getEnvVar(string $key, string $default = ''): string {
     $val = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
     return ($val !== false && $val !== null && $val !== '') ? (string)$val : $default;
 }
 
-// Ambil data DB (Prioritas: env Railway -> env standar -> default lokal XAMPP)
-define('DB_HOST',    getEnvVar('MYSQLHOST', getEnvVar('DB_HOST', 'mysql.railway.internal')));
-define('DB_USER',    getEnvVar('MYSQLUSER', getEnvVar('DB_USER', 'root')));
+// 1. Ambil host dari env
+$rawHost = getEnvVar('MYSQLHOST', getEnvVar('DB_HOST', 'mysql.railway.internal'));
+
+// 2. FIX UTAMA: Jika host kebaca 'localhost', paksa pakai TCP/IP atau domain internal Railway
+if ($rawHost === 'localhost' || $rawHost === '127.0.0.1') {
+    // Pakai domain internal Railway jika di cloud, atau ganti dengan domain MySQL Railway lu
+    $rawHost = getEnvVar('MYSQLPRIVATEHOST', 'mysql.railway.internal');
+}
+
+define('DB_HOST',    $rawHost);
+define('DB_USER',    getEnvVar('MYSQLUSER',     getEnvVar('DB_USER', 'root')));
 define('DB_PASS',    getEnvVar('MYSQLPASSWORD', getEnvVar('DB_PASS', 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS')));
 define('DB_NAME',    getEnvVar('MYSQLDATABASE', getEnvVar('DB_NAME', 'railway')));
-define('DB_PORT',    getEnvVar('MYSQLPORT', getEnvVar('DB_PORT', '3306')));
+define('DB_PORT',    getEnvVar('MYSQLPORT',     getEnvVar('DB_PORT', '3306')));
 define('APP_URL',    getEnvVar('APP_URL', 'http://localhost/inventaris'));
 
 define('DB_CHARSET', 'utf8mb4');
@@ -42,7 +48,6 @@ try {
     die(json_encode([
         'error'   => true,
         'message' => 'Koneksi database gagal. Pastikan database aktif.',
-        // Hapus baris 'detail' saat sudah di production
         'detail'  => $e->getMessage()
     ]));
 }
