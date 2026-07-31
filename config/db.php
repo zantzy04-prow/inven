@@ -16,7 +16,7 @@ if ($isRailway) {
     define('DB_PASS',    $_ENV['MYSQLPASSWORD']?? $_ENV['DB_PASS']    ?? 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
     define('DB_NAME',    $_ENV['MYSQLDATABASE']?? $_ENV['DB_NAME']    ?? 'railway');
     define('DB_PORT',    $_ENV['MYSQLPORT']    ?? $_ENV['DB_PORT']    ?? '3306');
-    define('APP_URL',    $_ENV['APP_URL']      ?? 'https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
+    define('APP_URL', getenv('APP_URL') ?: ('https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')));        
 } else {
     // Lokal XAMPP
     define('DB_HOST', 'localhost');
