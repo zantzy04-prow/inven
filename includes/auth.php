@@ -3,6 +3,13 @@
 //  includes/auth.php — Session & Auth Guard
 // ============================================================
 
+// Pastikan DB & Config ter-load jika auth dipanggil independen
+require_once __DIR__ . '/../config/db.php';
+
+if (!defined('APP_URL')) {
+    define('APP_URL', getenv('APP_URL') ?: '');
+}
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
