@@ -7,8 +7,7 @@
 
 // ── Deteksi environment Railway vs lokal ────────────────────
 // Railway menyediakan MYSQL_URL atau variabel individual
-$isRailway = isset($_ENV['RAILWAY_ENVIRONMENT']) || isset($_SERVER['RAILWAY_ENVIRONMENT']);
-
+$isRailway = isset($_ENV['MYSQLHOST']) || getenv('MYSQLHOST');
 if ($isRailway) {
     // Railway: gunakan environment variables yang disediakan otomatis
     define('DB_HOST',    $_ENV['MYSQLHOST']    ?? $_ENV['DB_HOST']    ?? 'mysql.railway.internal');
