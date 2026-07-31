@@ -5,26 +5,19 @@
 //  Railway: Baca dari environment variables otomatis
 // ============================================================
 
-// ── Deteksi environment Railway vs lokal ────────────────────
-// Railway menyediakan MYSQL_URL atau variabel individual
-$isRailway = isset($_ENV['MYSQLHOST']) || getenv('MYSQLHOST');
-if ($isRailway) {
-    // Railway: gunakan environment variables yang disediakan otomatis
-    define('DB_HOST',    $_ENV['MYSQLHOST']    ?? $_ENV['DB_HOST']    ?? 'mysql.railway.internal');
-    define('DB_USER',    $_ENV['MYSQLUSER']    ?? $_ENV['DB_USER']    ?? 'root');
-    define('DB_PASS',    $_ENV['MYSQLPASSWORD']?? $_ENV['DB_PASS']    ?? 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS');
-    define('DB_NAME',    $_ENV['MYSQLDATABASE']?? $_ENV['DB_NAME']    ?? 'railway');
-    define('DB_PORT',    $_ENV['MYSQLPORT']    ?? $_ENV['DB_PORT']    ?? '3306');
-    define('APP_URL', getenv('APP_URL') ?: ('https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost')));        
-} else {
-    // Lokal XAMPP
-    define('DB_HOST', 'localhost');
-    define('DB_USER', 'root');
-    define('DB_PASS', '');
-    define('DB_NAME', 'inventaris_sekolah');
-    define('DB_PORT', '3306');
-    define('APP_URL', 'http://localhost/inventaris');
+// Helper untuk mengambil environment variable dari mana saja
+function getEnvVar(string $key, string $default = ''): string {
+    $val = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+    return ($val !== false && $val !== null && $val !== '') ? (string)$val : $default;
 }
+
+// Ambil data DB (Prioritas: env Railway -> env standar -> default lokal XAMPP)
+define('DB_HOST',    getEnvVar('MYSQLHOST', getEnvVar('DB_HOST', 'mysql.railway.internal')));
+define('DB_USER',    getEnvVar('MYSQLUSER', getEnvVar('DB_USER', 'root')));
+define('DB_PASS',    getEnvVar('MYSQLPASSWORD', getEnvVar('DB_PASS', 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS')));
+define('DB_NAME',    getEnvVar('MYSQLDATABASE', getEnvVar('DB_NAME', 'railway')));
+define('DB_PORT',    getEnvVar('MYSQLPORT', getEnvVar('DB_PORT', '3306')));
+define('APP_URL',    getEnvVar('APP_URL', 'http://localhost/inventaris'));
 
 define('DB_CHARSET', 'utf8mb4');
 define('APP_NAME',   'Inventaris Lab');
