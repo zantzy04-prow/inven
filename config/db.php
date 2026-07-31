@@ -1,6 +1,6 @@
 <?php
 // ============================================================
-//  config/db.php — Database Connection
+//  config/db.php — Database Connection (Fix Forced TCP)
 //  Inventaris Sekolah | PHP Native + MySQL
 // ============================================================
 
@@ -9,16 +9,15 @@ function getEnvVar(string $key, string $default = ''): string {
     return ($val !== false && $val !== null && $val !== '') ? (string)$val : $default;
 }
 
-// 1. Ambil host dari env
-$rawHost = getEnvVar('MYSQLHOST', getEnvVar('DB_HOST', 'mysql.railway.internal'));
+// 1. Ambil Host
+$host = getEnvVar('MYSQLHOST', getEnvVar('DB_HOST', 'mysql.railway.internal'));
 
-// 2. FIX UTAMA: Jika host kebaca 'localhost', paksa pakai TCP/IP atau domain internal Railway
-if ($rawHost === 'localhost' || $rawHost === '127.0.0.1') {
-    // Pakai domain internal Railway jika di cloud, atau ganti dengan domain MySQL Railway lu
-    $rawHost = getEnvVar('MYSQLPRIVATEHOST', 'mysql.railway.internal');
+// Jika masih terbaca localhost/127.0.0.1, paksa ganti ke internal hostname atau loopback IP
+if ($host === 'localhost' || $host === '127.0.0.1') {
+    $host = getEnvVar('MYSQLPRIVATEHOST', 'mysql.railway.internal');
 }
 
-define('DB_HOST',    $rawHost);
+define('DB_HOST',    $host);
 define('DB_USER',    getEnvVar('MYSQLUSER',     getEnvVar('DB_USER', 'root')));
 define('DB_PASS',    getEnvVar('MYSQLPASSWORD', getEnvVar('DB_PASS', 'imwkrkesSQsUTfpBCMTGcayvdInfDtrS')));
 define('DB_NAME',    getEnvVar('MYSQLDATABASE', getEnvVar('DB_NAME', 'railway')));
@@ -32,6 +31,7 @@ define('APP_NAME',   'Inventaris Lab');
 $pdo = null;
 
 try {
+    // Kunci utama: gunakan Hostname/IP dan pastikan TCP connection
     $dsn = sprintf(
         'mysql:host=%s;port=%s;dbname=%s;charset=%s',
         DB_HOST, DB_PORT, DB_NAME, DB_CHARSET
@@ -45,9 +45,17 @@ try {
 
 } catch (PDOException $e) {
     http_response_code(500);
+    
+    // Tampilkan nilai DB_HOST & DB_PORT aktual untuk mempermudah analisa
     die(json_encode([
         'error'   => true,
         'message' => 'Koneksi database gagal. Pastikan database aktif.',
+        'debug'   => [
+            'host_terbaca' => DB_HOST,
+            'port_terbaca' => DB_PORT,
+            'user_terbaca' => DB_USER,
+            'db_terbaca'   => DB_NAME,
+        ],
         'detail'  => $e->getMessage()
     ]));
 }
